@@ -7,104 +7,60 @@ os.environ["JAVA_HOME"] = java_home_path
 
 import py5
 
-network_flow = {
-    'Input Image (128x128 Grayscale)': [
-        {
-            'shape': 'rect_grid',
-            'color': (210, 210, 210),
-            'count': 1,
-            'draw_size': 110,
-            'patch_size': 18,
-            'num': 1,
-            'link': 'auto'
-        }
-    ],
-    'Patch Unfold (Feature Detection)': [
-        {
-            'left_dis': 150,
-            'up_dis': 40,
-            'shape': 'rect_grid',
-            'color': (255, 204, 0),
-            'count': 9,
-            'draw_size': 36,
-            'patch_size': 6,
-            'num': 1,
-            'link': 'auto'
-        }
-    ],
-    'Patch Mapper (2nd Detection)': [
-        {
-            'left_dis': 100,
-            'up_dis': 40,
-            'shape': 'rect_grid',
-            'color': (200, 150, 255),
-            'count': 9,
-            'draw_size': 36,
-            'patch_size': 6,
-            'num': 1,
-            'link': 'auto'
-        }
-    ],
-    'Pool Concat (1D Feature)': [
-        {
-            'left_dis': 100,
-            'up_dis': 30,
-            'shape': 'rect',
-            'color': (255, 100, 100),
-            'count': 9,
-            'draw_size': 22,
-            # 给 rect 增加 num 属性测试
-            'num': 3, 
-            'link': 'auto'
-        },
-        {
-            'shape': 'rect',
-            'color': (100, 180, 255),
-            'count': 9,
-            'draw_size': 22,
-            'num': 1,
-            'link': 'auto'
-        }
-    ],
-    'Transformer Example': [
-        {
-            'left_dis': 100,
-            'up_dis': 100,
-            'shape': 'rect',
-            'color': (255, 180, 100),
-            'count': 9,
-            'draw_size': [40, 90],
-            'link': 'step',
-            'step_size': 9,
-            'branch_count': 2,
-            'heads': 4
-        }
-    ],
-    'MLP Layer 1': [
-        {
-            'left_dis': 100,
-            'up_dis': 25,
-            'shape': 'circle',
-            'color': (100, 160, 240),
-            'count': 12,
-            'draw_size': 20,
-            # 给 circle 增加 num 属性测试
-            'num': 2, 
-            'link': 'fc'
-        }
-    ],
-    'Output (Sigmoid)': [
-        {
-            'left_dis': 100,
-            'up_dis': 40,
-            'shape': 'circle',
-            'color': (130, 200, 150),
-            'count': 1,
-            'draw_size': 30,
-            'link': 'auto'
-        }
-    ]
-}
+network_flow = {   'Input Image (128x128 Grayscale)': [   {   'shape': 'rect_grid',
+                                               'color': [210, 210, 210],
+                                               'count': 1,
+                                               'draw_size': 200,
+                                               'patch_size': 128,
+                                               'num': 1,
+                                               'link': 'auto'}],
+    'Patch Unfold (Feature Detection)': [   {   'left_dis': 150,
+                                                'up_dis': 40,
+                                                'shape': 'rect_grid',
+                                                'color': [255, 204, 0],
+                                                'count': 8,
+                                                'draw_size': 80,
+                                                'patch_size': 16,
+                                                'num': 8,
+                                                'link': 'auto'}],
+    'Patch Mapper (2nd Detection)': [   {   'left_dis': 100,
+                                            'up_dis': 40,
+                                            'shape': 'rect_grid',
+                                            'color': [200, 150, 255],
+                                            'count': 8,
+                                            'draw_size': 80,
+                                            'patch_size': 16,
+                                            'num': 8,
+                                            'link': 'auto'}],
+    'Pool Concat (1D Feature)': [   {   'left_dis': 100,
+                                        'up_dis': 30,
+                                        'shape': 'rect',
+                                        'color': [255, 100, 100],
+                                        'count': 8,
+                                        'draw_size': 22,
+                                        'num': 8,
+                                        'link': 'auto'},
+                                    {   'shape': 'rect',
+                                        'color': [100, 180, 255],
+                                        'count': 8,
+                                        'draw_size': 22,
+                                        'num': 8,
+                                        'link': 'auto'}],
+    'MLP Layer 1': [   {   'left_dis': 100,
+                           'up_dis': 25,
+                           'shape': 'circle',
+                           'color': [100, 160, 240],
+                           'count': 12,
+                           'draw_size': 20,
+                           'num': 2,
+                           'link': 'fc'}],
+    'Output (Sigmoid)': [   {   'left_dis': 100,
+                                'up_dis': 40,
+                                'shape': 'circle',
+                                'color': [130, 200, 150],
+                                'count': 1,
+                                'draw_size': 30,
+                                'link': 'auto'}]}
 
 layers_data = []
 
