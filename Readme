@@ -1,0 +1,65 @@
+This README document provides an overview and usage instructions for the **Network Flow Visualizer & Editor**, a toolset designed to architect and visualize neural network architectures (like Transformers, MLPs, and CNNs) through a graphical interface and a `py5` (Processing) rendering engine.
+
+---
+
+## 🚀 Overview
+
+This project consists of two main components:
+1.  **`visual_editor.py`**: A GUI-based editor built with **PyQt6** that allows you to define layers, groups, and hyper-parameters visually. It supports drag-and-drop sorting and node duplication.
+2.  **`visual_torch.py`**: A rendering engine using **py5** that reads the network configuration and generates a high-quality visualization of the data flow, including support for grid patches, multi-head attention blocks, and various connection types (FC, Step, Auto).
+
+---
+
+## 🛠 Features
+
+### 🎨 Visual Editor (`visual_editor.py`)
+* **Hierarchical Editing**: Manage layers and groups within a tree structure.
+* **Interactive Controls**:
+    * **Duplicate**: Right-click to clone entire layers or specific groups.
+    * **Drag & Drop**: Reorder layers to change the visualization sequence.
+    * **Live Injection**: Modify parameters and click "Inject & Preview" to see changes instantly in the renderer.
+* **JSON Support**: Import or export your network architectures as JSON files for portability.
+
+### 🖼 Visualization Engine (`visual_torch.py`)
+* **Shape Support**: Render blocks as `rect` (standard), `rect_grid` (for image patches/ViT), or `circle` (MLP neurons).
+* **Connection Modes**:
+    * `auto`: Automatic index-based mapping.
+    * `fc`: Fully connected pattern.
+    * `step`: Specialized branching for multi-head or strided connections.
+* **3D Effect**: Supports "Stacked" nodes (using `num` and `shift` parameters) to represent depth or feature channels.
+* **Heads Rendering**: Specifically visualizes multi-head attention mechanisms above rectangular blocks.
+
+---
+
+## 📦 Installation
+
+### Prerequisites
+* Python 3.x
+* **Java JDK** (Required for `py5` / Processing)
+
+### Dependencies
+```bash
+pip install PyQt6 py5
+```
+
+> **Note**: In `visual_torch.py`, ensure the `java_home_path` variable is correctly set to your local JDK location:
+> ```python
+> java_home_path = r"C:\path\to\your\jvm"
+> ```
+
+---
+
+## 📖 Usage
+
+1.  **Launch the Editor**:
+    ```bash
+    python visual_editor.py
+    ```
+2.  **Edit the Network**:
+    * **Double-click** a value to edit it (e.g., changing `draw_size` or `color`).
+    * **Right-click** to add new layers or duplicate existing ones.
+    * **Drag** items to reorder the flow.
+3.  **Visualize**:
+    * Click **"🚀 注入参数并预览渲染 (Inject & Preview)"**. This will generate a temporary script and launch the `py5` window.
+
+---
