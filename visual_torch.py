@@ -53,8 +53,9 @@ network_flow = {
             'color': (255, 100, 100),
             'count': 9,
             'draw_size': 22,
-            # 给 rect 增加 num 属性测试
-            'num': 3, 
+            'num': 3,
+            'num_shift_x': 6,
+            'num_shift_y': -6,
             'link': 'auto'
         },
         {
@@ -74,6 +75,8 @@ network_flow = {
             'color': (255, 180, 100),
             'count': 9,
             'draw_size': [40, 90],
+            'num': 3,                  # 测试：添加多层
+            'color_shift': 0,          # 测试：颜色偏移设为0
             'link': 'step',
             'step_size': 9,
             'branch_count': 2,
@@ -88,7 +91,6 @@ network_flow = {
             'color': (100, 160, 240),
             'count': 12,
             'draw_size': 20,
-            # 给 circle 增加 num 属性测试
             'num': 2, 
             'link': 'fc'
         }
@@ -129,8 +131,8 @@ def settings():
             w, h = get_wh(g.get("draw_size", 20))
             num = g.get("num", 1)
             
-            off_x = max(2, w * 0.08)
-            off_y = max(2, h * 0.08) 
+            off_x = abs(g.get("num_shift_x", 4)) 
+            off_y = abs(g.get("num_shift_y", -4)) 
             
             node_actual_w = w + (num - 1) * off_x
             node_actual_h = h + (num - 1) * off_y
@@ -177,7 +179,7 @@ def calculate_coordinates():
         for g in groups:
             w, _ = get_wh(g.get("draw_size", 20))
             num = g.get("num", 1)
-            node_w = w + (num - 1) * max(2, w * 0.08)
+            node_w = w + (num - 1) * abs(g.get("num_shift_x", 4))
             if node_w > max_layer_w: max_layer_w = node_w
     default_x_spacing = max(180.0, float(max_layer_w * 1.8))
     
@@ -213,6 +215,9 @@ def calculate_coordinates():
                     "branch_count": group.get("branch_count", 2), 
                     "heads": group.get("heads", 0),               
                     "num": group.get("num", 1),
+                    "num_shift_x": group.get("num_shift_x", 4),
+                    "num_shift_y": group.get("num_shift_y", -4),
+                    "color_shift": group.get("color_shift", 25), # 提取颜色偏移属性
                     "patch_size": group.get("patch_size", 1),
                     "g_idx": idx,          
                     "g_count": g_count,    
@@ -222,15 +227,11 @@ def calculate_coordinates():
         layers_data.append(layer_nodes)
 
 def get_layer_points(layer):
-    """提取真正的独立连线坐标点，现在对所有图形计算偏移"""
     pts = []
     for node in layer:
-        w, h = get_wh(node["draw_size"])
         num = node.get("num", 1)
-        
-        # 为所有形状统一设置深度拉伸偏移量
-        off_x = max(2, w * 0.08)
-        off_y = -max(2, h * 0.08)
+        off_x = node["num_shift_x"]
+        off_y = node["num_shift_y"]
             
         for d in range(num):
             pts.append({
@@ -276,9 +277,10 @@ def draw_connections():
                 py5.stroke(180, 100)
                 step_val = n_pt["node"].get("step_size", 9)
                 branch_val = n_pt["node"].get("branch_count", 2)
+                group_idx = n_pt["node"].get("g_idx", 0)
                 
                 for b in range(branch_val):
-                    target_idx = n_idx + b * step_val
+                    target_idx = group_idx + b * step_val
                     if target_idx < len(curr_pts):
                         py5.line(curr_pts[target_idx]["x"], curr_pts[target_idx]["y"], n_pt["x"], n_pt["y"])
 
@@ -292,49 +294,48 @@ def draw_nodes():
             c = node["color"]
             num = node.get("num", 1)
             
+            off_x = node["num_shift_x"]
+            off_y = node["num_shift_y"]
+            color_shift = node["color_shift"]
+            
             if shape == "rect_grid":
-                draw_cube(x, y, node["patch_size"], num, c, w, h)
+                draw_cube(x, y, node["patch_size"], num, c, w, h, off_x, off_y, color_shift)
             else:
-                # 给 rect 和 circle 也加入景深绘制循环
-                off_x = max(2, w * 0.08)
-                off_y = -max(2, h * 0.08)
-                
                 for d in range(num - 1, -1, -1):
                     ox = x + d * off_x
                     oy = y + d * off_y
                     
-                    # 颜色逐渐加深以体现层次感
-                    fill_c = [max(v - d*25, 0) for v in c]
+                    # 使用 color_shift 决定颜色变化
+                    fill_c = [max(v - d * color_shift, 0) for v in c]
                     py5.fill(*fill_c)
                     py5.stroke(50)
                     
                     if shape == "rect":
                         py5.rect(ox, oy, w, h)
                         
-                        # Heads 逻辑（如果是多层，我们只在最外面那一层 d==0 的时候画 heads，防止重叠污染）
-                        if d == 0:
-                            heads = node.get("heads", 0)
-                            if heads > 0:
-                                head_h = 8  
-                                head_w = w / heads  
-                                head_c = (min(255, c[0] + 40), min(255, c[1] + 40), min(255, c[2] + 40))
-                                py5.fill(*head_c)
-                                for h_idx in range(heads):
-                                    hx = ox - w/2 + head_w/2 + h_idx * head_w
-                                    hy = oy - h/2 - head_h/2 
-                                    py5.rect(hx, hy, head_w, head_h)
+                        # 迁移 Heads 逻辑，使其在每一层(d)都生效绘制
+                        heads = node.get("heads", 0)
+                        if heads > 0:
+                            head_h = 8  
+                            head_w = w / heads  
+                            # 根据当前的层颜色进行提亮，保证在暗层中也能看清heads
+                            head_c = (min(255, fill_c[0] + 40), min(255, fill_c[1] + 40), min(255, fill_c[2] + 40))
+                            py5.fill(*head_c)
+                            for h_idx in range(heads):
+                                hx = ox - w/2 + head_w/2 + h_idx * head_w
+                                hy = oy - h/2 - head_h/2 
+                                py5.rect(hx, hy, head_w, head_h)
                                     
                     elif shape == "circle":
                         py5.circle(ox, oy, w)
 
-def draw_cube(x, y, p_size, num, c, w, h):
-    off_x = max(2, w * 0.08)
-    off_y = -max(2, h * 0.08)
-    
+def draw_cube(x, y, p_size, num, c, w, h, off_x, off_y, color_shift):
     for d in range(num-1, -1, -1):
         ox = x + d * off_x
         oy = y + d * off_y
-        fill_c = [max(v - d*25, 0) for v in c]
+        
+        # 使用 color_shift 决定颜色变化
+        fill_c = [max(v - d * color_shift, 0) for v in c]
         py5.fill(*fill_c)
         py5.stroke(50)
         py5.rect(ox, oy, w, h)
@@ -351,7 +352,6 @@ def draw_layer_labels():
     py5.fill(50)
     py5.text_align(py5.CENTER, py5.TOP)
     py5.text_size(14)
-    names = list(network_flow.keys())
 
 if __name__ == '__main__':
     py5.run_sketch()

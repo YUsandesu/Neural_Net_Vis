@@ -31,15 +31,36 @@
             "link": "auto"
         }
     ],
-    "Patch Mapper (2nd Detection)": [
+    "Transformer": [
         {
-            "left_dis": 100,
+            "shape": "rect",
+            "color": [
+                200,
+                200,
+                200
+            ],
+            "count": 1,
+            "draw_size": [
+                40,
+                500
+            ],
+            "num": 8,
+            "link": "auto",
+            "left_dis": 80,
+            "num_shift_x": 10,
+            "color_shift": 15,
+            "heads": 2
+        }
+    ],
+    "Patch Unfold (Feature Detection)_copy": [
+        {
+            "left_dis": 150,
             "up_dis": 60,
             "shape": "rect_grid",
             "color": [
-                200,
-                150,
-                255
+                255,
+                204,
+                0
             ],
             "count": 8,
             "draw_size": 40,

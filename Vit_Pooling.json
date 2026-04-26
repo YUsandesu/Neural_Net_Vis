@@ -31,15 +31,36 @@
             "link": "auto"
         }
     ],
-    "Patch Mapper (2nd Detection)": [
+    "Transformer": [
         {
-            "left_dis": 100,
+            "shape": "rect",
+            "color": [
+                200,
+                200,
+                200
+            ],
+            "count": 1,
+            "draw_size": [
+                40,
+                500
+            ],
+            "num": 8,
+            "link": "auto",
+            "left_dis": 80,
+            "num_shift_x": 10,
+            "color_shift": 15,
+            "heads": 2
+        }
+    ],
+    "Patch Unfold (Feature Detection)_copy": [
+        {
+            "left_dis": 150,
             "up_dis": 60,
             "shape": "rect_grid",
             "color": [
-                200,
-                150,
-                255
+                255,
+                204,
+                0
             ],
             "count": 8,
             "draw_size": 40,
@@ -49,22 +70,6 @@
         }
     ],
     "Pool Concat (1D Feature)": [
-        {
-            "left_dis": 100,
-            "up_dis": 30,
-            "shape": "rect",
-            "color": [
-                255,
-                100,
-                100
-            ],
-            "count": 8,
-            "draw_size": 22,
-            "num": 1,
-            "link": "step",
-            "step_size": 2,
-            "branch_count": 1
-        },
         {
             "left_dis": 100,
             "up_dis": 30,
@@ -92,23 +97,7 @@
                 160,
                 240
             ],
-            "count": 16,
-            "draw_size": 20,
-            "num": 1,
-            "link": "fc"
-        }
-    ],
-    "MLP Layer 2": [
-        {
-            "left_dis": 80,
-            "up_dis": 25,
-            "shape": "circle",
-            "color": [
-                100,
-                160,
-                240
-            ],
-            "count": 4,
+            "count": 8,
             "draw_size": 20,
             "num": 1,
             "link": "fc"
